@@ -7,7 +7,7 @@ import DataTable from "@/Components/DataTable";
 import { useAuthPermissions } from "@/Hooks/useAuthPermissions";
 import { useSortedFiltered } from "@/Hooks/useSortedFiltered";
 
-// Debounce helper to limit re-filtering during typing
+// Debounce helper
 function useDebounce(value, delay = 300) {
     const [debounced, setDebounced] = useState(value);
     useEffect(() => {
@@ -24,11 +24,11 @@ export default function Namecards({ namecards, breadcrumbs }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortField, setSortField] = useState(null);
     const [sortDir, setSortDir] = useState("asc");
+    const [selected, setSelected] = useState([]);
 
-    // ✅ Debounce searchTerm to prevent re-filtering on every keystroke
     const debouncedSearch = useDebounce(searchTerm, 300);
 
-    // ✅ Stable column definitions (so DataTable doesn’t re-render unnecessarily)
+    // Columns with select all checkbox
     const columns = useMemo(
         () => [
             { label: "Full Name", field: "name", sortable: true },
@@ -39,10 +39,10 @@ export default function Namecards({ namecards, breadcrumbs }) {
             { label: "Category", field: "department", sortable: true },
             { label: "Actions" },
         ],
-        []
+        [selected, namecards]
     );
 
-    // ✅ Stable sorting handler
+    // Sorting
     const handleSort = useCallback(
         (field) => {
             if (field === sortField) {
@@ -55,10 +55,11 @@ export default function Namecards({ namecards, breadcrumbs }) {
         [sortField]
     );
 
-    // ✅ Stable delete function
+    // Delete a single namecard
     const deleteNamecard = useCallback(
         (id) =>
             permissions.delete &&
+            ["admin", "superadmin"].includes(roleName) &&
             confirm("Are you sure you want to delete this namecard?") &&
             router.post(roleUrl(roleName, "namecards.destroy", id), {
                 _method: "DELETE",
@@ -66,7 +67,7 @@ export default function Namecards({ namecards, breadcrumbs }) {
         [permissions.delete, roleName]
     );
 
-    // ✅ Filter + sort hook (uses debounced search term)
+    // Filter + sort
     const sortedNamecards = useSortedFiltered(
         namecards,
         debouncedSearch,
@@ -82,7 +83,7 @@ export default function Namecards({ namecards, breadcrumbs }) {
         sortDir
     );
 
-    // ✅ Stable renderRow function
+    // Render each row
     const renderRow = useCallback(
         (nc) => {
             const imageUrl = nc.image ? `/storage/${nc.image}` : null;
@@ -101,7 +102,9 @@ export default function Namecards({ namecards, breadcrumbs }) {
                     <td className="px-4 py-4">
                         {nc.department?.acronym ?? "-"}
                     </td>
-                    <td className="px-4 py-4 flex gap-2">
+
+                    {/* Actions */}
+                    <td className="px-4 py-4 flex gap-2 justify-center">
                         {permissions.edit && (
                             <Link
                                 href={roleUrl(roleName, "namecards.edit", {
@@ -114,14 +117,13 @@ export default function Namecards({ namecards, breadcrumbs }) {
                         )}
                         <a
                             href={`/profile/${nc.uid}`}
-                            className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-                            aria-label={`View namecard ${nc.name}`}
+                            className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
                             View
                         </a>
-                        {permissions.delete && (
+                        {permissions.delete && roleName === "admin" && (
                             <button
                                 onClick={() => deleteNamecard(nc.id)}
                                 className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
@@ -134,29 +136,31 @@ export default function Namecards({ namecards, breadcrumbs }) {
                 </tr>
             );
         },
-        [permissions, deleteNamecard, roleName]
+        [permissions, deleteNamecard, roleName, selected]
     );
 
     return (
         <AdminLayout breadcrumbs={breadcrumbs}>
             <div className="bg-white rounded-lg shadow">
-                {/* Header */}
+                {/* Header with Add & Bulk Delete */}
                 <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                     <h2 className="text-xl font-semibold text-gray-800">
                         Namecards
                     </h2>
-                    {permissions.create && (
-                        <button
-                            onClick={() =>
-                                router.get(
-                                    roleUrl(roleName, "namecards.create")
-                                )
-                            }
-                            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                        >
-                            Add New
-                        </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {permissions.create && (
+                            <button
+                                onClick={() =>
+                                    router.get(
+                                        roleUrl(roleName, "namecards.create")
+                                    )
+                                }
+                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                            >
+                                Add New
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Filter/Search */}

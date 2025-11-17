@@ -22,7 +22,22 @@ class HandleInertiaRequests extends Middleware
                     ] : null,
                 ] : null,
             ],
-            // Add any other shared data, like flash messages or permissions
+            'errors' => function () use ($request) {
+                if (! $request->session()->has('errors')) {
+                    return [];
+                }
+                return collect($request->session()->get('errors')->getBags())
+                    ->map(function ($bag) {
+                        return $bag->messages();
+                    })
+                    ->collapse()
+                    ->toArray();
+            },
+            'flash' => [
+                'success' => fn() => $request->session()->get('success'),
+                'error' => fn() => $request->session()->get('error'),
+                // Add more flash types if needed, e.g., 'info', 'warning'
+            ],
         ]);
     }
 }

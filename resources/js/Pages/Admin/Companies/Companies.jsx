@@ -124,7 +124,7 @@ export default function Companies({ companies, breadcrumbs }) {
                                 {c.name}
                             </td>
 
-                            <td className="px-4 py-4 flex gap-2">
+                            <td className="px-4 py-4 flex gap-2 justify-center">
                                 {permissions.edit && (
                                     <Link
                                         href={roleUrl(

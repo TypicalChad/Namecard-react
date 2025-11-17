@@ -81,7 +81,7 @@ export default function Roles({ roles, breadcrumbs }) {
                         <tr key={r.id} className="hover:bg-gray-50">
                             <td className="px-4 py-4">{r.name}</td>
                             <td className="px-4 py-4">{r.display_name}</td>
-                            <td className="px-4 py-4 flex gap-2">
+                            <td className="px-4 py-4 flex gap-2 justify-center">
                                 {permissions.edit && (
                                     <Link
                                         href={roleUrl(

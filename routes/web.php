@@ -8,12 +8,22 @@ use App\Http\Controllers\{
     UserController,
     DepartmentController,
     CompController,
-    MediaController,
     NameCardController
 };
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\User;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
+// Login page (GET)
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+    ->name('login');
+
+// Login submit (POST)
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+
+// Logout
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
+
 
 // Force logout
 Route::get('/force-logout', function () {
@@ -71,7 +81,7 @@ foreach ($roles as $role) {
                     'roles' => RoleController::class,
                     'users' => UserController::class,
                     'companies' => CompController::class,
-                    'media' => MediaController::class,
+                    //'media' => MediaController::class,
                 ]);
             }
         });

@@ -61,7 +61,7 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
             companies: "companies",
             departments: "departments",
             namecards: "namecards",
-            media: "media",
+            //media: "media",
         };
 
         return Object.keys(validRoutes).flatMap((role) =>
@@ -76,7 +76,7 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
                     "companies",
                     "roles",
                     "users",
-                    "media",
+                    //"media",
                 ];
                 if (resourceRoutes.includes(baseRoute)) {
                     fullRoute = `${baseRoute}.index`;

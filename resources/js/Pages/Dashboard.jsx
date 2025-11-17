@@ -25,12 +25,6 @@ export default function Dashboard({ profile, actions }) {
                             <strong>Email:</strong> {profile.email}
                         </div>
                         <div>
-                            <strong>Company:</strong> {profile.company}
-                        </div>
-                        <div>
-                            <strong>Department:</strong> {profile.department}
-                        </div>
-                        <div>
                             <strong>Role:</strong> {profile.role}
                         </div>
                     </div>

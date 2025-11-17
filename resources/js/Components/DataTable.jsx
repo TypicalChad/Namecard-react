@@ -41,16 +41,20 @@ export default React.memo(function DataTable({
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full text-sm table-auto">
+            <table className="min-w-full text-sm table-fixed">
                 <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                         {columns.map((col) => (
                             <th
                                 key={col.field || col.label}
-                                className={`px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider ${
+                                className={`px-4 py-3 font-medium text-gray-500 uppercase tracking-wider ${
                                     col.sortable
                                         ? "cursor-pointer select-none"
                                         : ""
+                                } ${
+                                    col.label === "Actions"
+                                        ? "text-center"
+                                        : "text-left"
                                 }`}
                                 onClick={() =>
                                     col.sortable && onSort(col.field)

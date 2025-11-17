@@ -14,10 +14,20 @@ export default function Login({ status, canResetPassword }) {
         remember: false,
     });
 
+    const [genericError, setGenericError] = useState("");
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        setGenericError(""); // reset generic error
         post(route("login"), {
             onFinish: () => reset("password"),
+            onError: (err) => {
+                // If there's an email or password error, leave it to InputError
+                // Otherwise, show a generic message
+                if (!err.email && !err.password) {
+                    setGenericError("User not found or password mismatch");
+                }
+            },
         });
     };
 
@@ -72,6 +82,12 @@ export default function Login({ status, canResetPassword }) {
                     {status && (
                         <div className="mb-4 text-sm font-medium text-green-600 bg-green-50 p-3 rounded-lg">
                             {status}
+                        </div>
+                    )}
+
+                    {genericError && (
+                        <div className="mb-4 text-sm font-medium text-red-600 bg-red-50 p-3 rounded-lg">
+                            {genericError}
                         </div>
                     )}
 

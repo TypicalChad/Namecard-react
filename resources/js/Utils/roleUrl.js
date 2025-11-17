@@ -2,8 +2,19 @@ import { route } from "ziggy-js";
 
 // Define valid base routes per internal role key
 export const validRoutes = {
-    admin: ["dashboard", "roles", "users", "media", "companies", "departments", "namecards"],
-    user: ["dashboard", "namecards"],
+    admin: [
+        "dashboard",
+        "roles",
+        "users",
+        //"media",
+        "companies",
+        "departments",
+        "namecards"
+    ],
+    user: [
+        "dashboard",
+        "namecards"
+    ],
 };
 
 export const roleUrl = (role, name, params = {}) => {

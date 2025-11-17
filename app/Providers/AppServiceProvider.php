@@ -28,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
                         'email' => Auth::user()->role->email,
                         'role_id' => Auth::user()->role_id,
                         'role' => Auth::user()->role ? [
-                            'name' => Auth::user()->role->name,          // canonical key: "admin", "hr", "div"
-                            'display_name' => Auth::user()->role->display_name, // UI-friendly
+                            'name' => Auth::user()->role->name,
+                            'display_name' => Auth::user()->role->display_name,
                         ] : null,
                     ] : null,
                 ];

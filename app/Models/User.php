@@ -78,8 +78,7 @@ class User extends Authenticatable
 
         return match ($role) {
             'admin'     => route('dashboard'),
-            'hr'        => route('dashboard'),
-            'div admin' => route('dashboard'),
+            'user'        => route('dashboard'),
             default     => route('login'),
         };
     }

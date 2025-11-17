@@ -21,8 +21,6 @@ class LoginRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -46,6 +44,7 @@ class LoginRequest extends FormRequest
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+                'password' => trans('auth.failed'),
             ]);
         }
 
@@ -72,6 +71,10 @@ class LoginRequest extends FormRequest
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
+            'password' => trans('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ]),
         ]);
     }
 
@@ -80,6 +83,8 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(
+            Str::lower($this->input('email')) . '|' . $this->ip()
+        );
     }
 }
