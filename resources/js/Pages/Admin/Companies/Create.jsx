@@ -70,7 +70,7 @@ export default function CreateCompany() {
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-4xl mx-auto bg-white rounded shadow">
+            <div className="bg-white rounded-lg shadow p-6 ">
                 <h1 className="text-xl font-semibold mb-4">Add Company</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">

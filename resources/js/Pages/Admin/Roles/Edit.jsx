@@ -19,7 +19,7 @@ export default function EditRole({ role, breadcrumbs }) {
 
     return (
         <AdminLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-white rounded-lg shadow p-6 max-w-xl mx-auto mt-8">
+            <div className="bg-white rounded-lg shadow p-6 ">
                 <h2 className="text-xl font-semibold mb-4">Edit Role</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">

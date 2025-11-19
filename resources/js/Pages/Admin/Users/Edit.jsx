@@ -33,7 +33,7 @@ export default function EditUser({ user, roles, departments, breadcrumbs }) {
 
     return (
         <AdminLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-white rounded-lg shadow p-6 max-w-md mx-auto mt-8">
+            <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-xl font-semibold mb-4">Edit User</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Name */}

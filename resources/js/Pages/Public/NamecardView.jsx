@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Phone, Mail, Linkedin, Globe, MapPin, Share2 } from "lucide-react";
+import React, { useState } from "react";
+import {
+    Phone,
+    Mail,
+    Linkedin,
+    Globe,
+    MapPin,
+    Share2,
+    ScanQrCode,
+    MonitorCloud,
+} from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export default function NamecardView({ namecard, vcardContent }) {
     const [activeTab, setActiveTab] = useState("about");
+    const [showQR, setShowQR] = useState(false);
+    const profileUrl = `http://localhost:8000/profile/${namecard.uid}`;
 
-    // Use namecard image if available, otherwise use company default image
     const imageUrl = namecard?.image
         ? `/storage/${namecard.image}`
         : namecard?.company?.default_image
@@ -13,7 +23,6 @@ export default function NamecardView({ namecard, vcardContent }) {
         : null;
 
     const company = namecard?.company;
-
     const vCard = vcardContent || "";
 
     const handleShare = () => {
@@ -24,7 +33,7 @@ export default function NamecardView({ namecard, vcardContent }) {
                 url: window.location.href,
             });
         } else {
-            alert("Sharing is not supported on this device.");
+            alert("Sharing not supported.");
         }
     };
 
@@ -34,17 +43,16 @@ export default function NamecardView({ namecard, vcardContent }) {
         const link = document.createElement("a");
         link.href = url;
         link.download = `${namecard.name || "contact"}.vcf`;
-        document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gray-100 grid place-items-center p-4">
             <div className="bg-white shadow-lg rounded-lg max-w-2xl w-full overflow-hidden">
                 {/* Header */}
                 <div className="relative bg-gray-50 h-48">
+                    {/* Red clipped banner */}
                     <div
                         className="absolute top-0 right-0 bg-red-600 w-full h-full"
                         style={{
@@ -52,33 +60,48 @@ export default function NamecardView({ namecard, vcardContent }) {
                                 "polygon(40% 0, 100% 0, 100% 100%, 70% 100%)",
                         }}
                     />
-                    <div className="relative h-full flex items-center justify-between px-8">
-                        {/* Left: Company Logo & Share */}
-                        <div className="flex flex-col items-start space-y-4">
-                            <div className="flex items-center space-x-2">
-                                {company?.coy_logo ? (
-                                    <img
-                                        src={`/storage/${company.coy_logo}`}
-                                        alt={company.name}
-                                        className="w-20 h-20 object-contain rounded-full p-1"
-                                    />
-                                ) : (
-                                    <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-white font-bold">
-                                        {company?.name?.charAt(0) || "C"}
-                                    </div>
-                                )}
-                            </div>
+
+                    <div className="grid grid-cols-[auto_1fr_auto] items-start h-full relative gap-2">
+                        {/* LEFT COLUMN — Logo */}
+                        <div
+                            className="grid grid-cols-1 items-start left-0 adjustable-item"
+                            style={{
+                                paddingTop: "24px",
+                                marginLeft: "20px",
+                            }}
+                        >
+                            {/* Logo */}
+                            {company?.coy_logo ? (
+                                <img
+                                    src={`/storage/${company.coy_logo}`}
+                                    alt={company.name}
+                                    className="w-20 h-18 object-cover"
+                                />
+                            ) : (
+                                <div className="w-12 h-12 bg-gray-300 rounded-full grid place-items-center text-white font-bold">
+                                    {company?.name?.charAt(0) || "C"}
+                                </div>
+                            )}
+                        </div>
+                        {/* LEFT COLUMN — Share */}
+                        <div
+                            className="absolute adjustable-item"
+                            style={{ top: "120px", left: "52px" }}
+                        >
                             <button
                                 onClick={handleShare}
-                                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+                                className="w-12 h-12 rounded-lg grid place-items-center text-gray-600 hover:text-gray-800"
                             >
-                                <Share2 size={24} />
+                                <Share2 size={28} />
                             </button>
                         </div>
 
-                        {/* Center: Profile Image */}
-                        <div className="absolute left-1/2 transform -translate-x-1/2 top-8">
-                            <div className="w-36 h-36 bg-white rounded-2xl border-4 border-white shadow-lg overflow-hidden flex items-center justify-center">
+                        {/* CENTER COLUMN — Profile Picture */}
+                        <div
+                            className="grid place-items-center relative adjustable-item"
+                            style={{ marginTop: "24px" }}
+                        >
+                            <div className="w-36 h-36 bg-white rounded-2xl border-4 border-white shadow-lg overflow-hidden grid place-items-center">
                                 {imageUrl ? (
                                     <img
                                         src={imageUrl}
@@ -86,30 +109,32 @@ export default function NamecardView({ namecard, vcardContent }) {
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold">
+                                    <div className="w-full h-full bg-gray-300 grid place-items-center text-gray-600 font-semibold">
                                         No Image
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Right: QR Code */}
-                        <div className="flex items-center space-x-2">
-                            <div className="w-24 h-24 bg-white p-2 rounded flex items-center justify-center">
-                                <div className="w-24 h-24 bg-white p-2 rounded flex items-center justify-center">
-                                    <QRCodeSVG
-                                        value={vCard}
-                                        size={100}
-                                        level="L"
-                                    />
-                                </div>
-                            </div>
+                        {/* RIGHT COLUMN — QR Button */}
+                        <div
+                            className="flex flex-col items-end adjustable-item"
+                            style={{ paddingTop: "120px", marginRight: "52px" }}
+                        >
+                            <button
+                                onClick={() => setShowQR(true)}
+                                className="w-12 h-12 rounded-lg grid place-items-center"
+                            >
+                                <ScanQrCode
+                                    size={28}
+                                    className="text-gray-900"
+                                />
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                {/* Name, Position, Department */}
-                <div className="text-center pt-20 px-8">
+                {/* Name + Position */}
+                <div className="text-center pt-18 px-8 grid gap-1">
                     <h1 className="text-2xl font-bold text-gray-800 tracking-wide">
                         {namecard.name}
                     </h1>
@@ -124,7 +149,7 @@ export default function NamecardView({ namecard, vcardContent }) {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex justify-center space-x-4 mt-6 px-8">
+                <div className="grid grid-flow-col justify-center gap-4 mt-6 px-8">
                     {["about", "services"].map((tab) => (
                         <button
                             key={tab}
@@ -142,7 +167,7 @@ export default function NamecardView({ namecard, vcardContent }) {
 
                 {/* About Tab */}
                 {activeTab === "about" && (
-                    <div className="px-8 py-6 space-y-4">
+                    <div className="px-8 py-6 grid gap-4">
                         {[
                             {
                                 icon: Phone,
@@ -177,7 +202,6 @@ export default function NamecardView({ namecard, vcardContent }) {
                         ].map(({ icon: Icon, label, value, link }) => {
                             if (!value) return null;
 
-                            // Strip HTML tags from value
                             const cleanValue = value
                                 .replace(/<[^>]*>/g, "")
                                 .replace(/&nbsp;/g, " ")
@@ -186,41 +210,33 @@ export default function NamecardView({ namecard, vcardContent }) {
                             return (
                                 <div
                                     key={label}
-                                    className="flex items-center space-x-4"
+                                    className="grid grid-cols-[50px_1fr] gap-4 items-start"
                                 >
-                                    <div className="w-10 h-10 border-2 border-gray-800 rounded flex items-center justify-center">
+                                    <div className="w-10 h-10 border-2 border-gray-800 rounded grid place-items-center">
                                         <Icon
                                             size={20}
                                             className="text-gray-800"
                                         />
                                     </div>
-                                    <div>
+
+                                    <div className="grid">
                                         <span className="text-xs font-bold text-blue-600 uppercase">
                                             {label}:
                                         </span>
+
                                         {link ? (
                                             <a
                                                 href={link}
-                                                target={
-                                                    label === "LINKEDIN" ||
-                                                    label === "WEBSITE"
-                                                        ? "_blank"
-                                                        : undefined
-                                                }
-                                                rel={
-                                                    label === "LINKEDIN" ||
-                                                    label === "WEBSITE"
-                                                        ? "noopener noreferrer"
-                                                        : undefined
-                                                }
-                                                className="text-gray-800 font-medium break-all hover:text-blue-600 block"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-gray-800 font-medium break-all hover:text-blue-600"
                                             >
                                                 {cleanValue}
                                             </a>
                                         ) : (
-                                            <div className="text-gray-800 font-medium break-all">
+                                            <p className="text-gray-800 font-medium break-all">
                                                 {cleanValue}
-                                            </div>
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -231,26 +247,28 @@ export default function NamecardView({ namecard, vcardContent }) {
 
                 {/* Services Tab */}
                 {activeTab === "services" && (
-                    <div className="px-8 py-6 space-y-6">
-                        <div className="border-t border-b border-red-600 py-4">
-                            <h2 className="text-xl font-bold text-center">
+                    <div className="px-8 py-6 grid gap-6">
+                        {/* SERVICES */}
+                        <div className="flex items-center py-4">
+                            <div className="flex-grow h-[1px] bg-red-600"></div>
+                            <h2 className="px-4 text-xl font-bold text-center whitespace-nowrap">
                                 SERVICES
                             </h2>
+                            <div className="flex-grow h-[1px] bg-red-600"></div>
                         </div>
 
-                        {/* Services Icons/Links */}
+                        {/* Services Icons */}
                         <div className="grid grid-cols-3 gap-6">
-                            {/* Our Services */}
                             {company?.services && (
                                 <a
                                     href={company.services}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex flex-col items-center text-center hover:opacity-80 transition-opacity"
+                                    className="grid justify-items-center gap-1 hover:opacity-80"
                                 >
-                                    <div className="w-20 h-20 border-2 border-gray-800 rounded-lg flex items-center justify-center mb-2">
-                                        <Globe
-                                            size={32}
+                                    <div className="w-20 h-20 border-2 border-gray-800 rounded-lg grid place-items-center">
+                                        <MonitorCloud
+                                            size={40}
                                             className="text-gray-800"
                                         />
                                     </div>
@@ -260,17 +278,16 @@ export default function NamecardView({ namecard, vcardContent }) {
                                 </a>
                             )}
 
-                            {/* CBM LinkedIn */}
                             {company?.linkedin_company && (
                                 <a
                                     href={company.linkedin_company}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex flex-col items-center text-center hover:opacity-80 transition-opacity"
+                                    className="grid justify-items-center gap-1 hover:opacity-80"
                                 >
-                                    <div className="w-20 h-20 border-2 border-gray-800 rounded-lg flex items-center justify-center mb-2">
+                                    <div className="w-20 h-20 border-2 border-gray-800 rounded-lg grid place-items-center">
                                         <Linkedin
-                                            size={32}
+                                            size={40}
                                             className="text-gray-800"
                                         />
                                     </div>
@@ -280,17 +297,16 @@ export default function NamecardView({ namecard, vcardContent }) {
                                 </a>
                             )}
 
-                            {/* CBM Link */}
                             {company?.cbm_link && (
                                 <a
                                     href={company.cbm_link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex flex-col items-center text-center hover:opacity-80 transition-opacity"
+                                    className="grid justify-items-center gap-1 hover:opacity-80"
                                 >
-                                    <div className="w-20 h-20 border-2 border-gray-800 rounded-lg flex items-center justify-center mb-2">
+                                    <div className="w-20 h-20 border-2 border-gray-800 rounded-lg grid place-items-center">
                                         <Globe
-                                            size={32}
+                                            size={40}
                                             className="text-gray-800"
                                         />
                                     </div>
@@ -301,75 +317,77 @@ export default function NamecardView({ namecard, vcardContent }) {
                             )}
                         </div>
 
-                        {/* Products Section */}
+                        {/* Products */}
                         {(company?.product_title ||
                             company?.product_image ||
                             company?.product_link) && (
                             <>
-                                <div className="border-t border-b border-red-600 py-4">
-                                    <h2 className="text-xl font-bold text-center">
+                                {/* PRODUCTS */}
+                                <div className="flex items-center py-4">
+                                    <div className="flex-grow h-[1px] bg-red-600"></div>
+                                    <h2 className="px-4 text-xl font-bold text-center whitespace-nowrap">
                                         PRODUCTS
                                     </h2>
+                                    <div className="flex-grow h-[1px] bg-red-600"></div>
                                 </div>
-                                <div className="flex flex-col items-center">
-                                    <div className="flex flex-col items-center text-center mb-4">
-                                        {company.product_image && (
-                                            <img
-                                                src={`/storage/${company.product_image}`}
-                                                alt={company.product_title}
-                                                className="w-32 h-32 object-contain mb-2"
-                                            />
-                                        )}
-                                        {company.product_link ? (
-                                            <a
-                                                href={company.product_link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-sm font-medium hover:text-blue-600"
-                                            >
-                                                {company.product_title ||
-                                                    "View Product"}
-                                            </a>
-                                        ) : (
-                                            <p className="text-sm font-medium">
-                                                {company.product_title}
-                                            </p>
-                                        )}
-                                    </div>
+
+                                <div className="grid justify-items-center">
+                                    {company.product_image && (
+                                        <img
+                                            src={`/storage/${company.product_image}`}
+                                            alt={company.product_title}
+                                            className="w-32 h-32 object-contain mb-2"
+                                        />
+                                    )}
+
+                                    {company.product_link ? (
+                                        <a
+                                            href={company.product_link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-sm font-medium hover:text-blue-600"
+                                        >
+                                            {company.product_title ||
+                                                "View Product"}
+                                        </a>
+                                    ) : (
+                                        <p className="text-sm font-medium">
+                                            {company.product_title}
+                                        </p>
+                                    )}
                                 </div>
                             </>
                         )}
                     </div>
                 )}
 
-                {/* Save Contact Button */}
+                {/* Save Contact */}
                 <div className="px-8 pb-6">
                     <button
                         onClick={handleSaveContact}
-                        className="bg-gray-800 text-white w-full py-3 rounded-lg font-bold tracking-wide hover:bg-gray-900 transition-colors"
+                        className="bg-gray-800 text-white w-full py-3 rounded-lg font-bold tracking-wide hover:bg-gray-900"
                     >
                         SAVE CONTACT
                     </button>
                 </div>
 
-                {/* Map if exists */}
-                {company.map_link && (
+                {/* Map */}
+                {company?.map_link && (
                     <div className="px-8 pb-6">
                         <div className="w-full overflow-hidden rounded-lg">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.785244814512!2d103.89856917599411!3d1.303876561719776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da170f03905e01%3A0xbed188aeda875223!2sCBM%20Pte%20Ltd!5e0!3m2!1sen!2ssg!4v1762160842719!5m2!1sen!2ssg"
+                                src={company.map_link}
                                 width="100%"
                                 height="250"
                                 style={{ border: 0 }}
                                 allowFullScreen
                                 loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
                             ></iframe>
                         </div>
                     </div>
                 )}
 
-                {/* Company Banner */}
+                {/* Banner */}
                 {company?.coy_banner && (
                     <div className="px-8 pb-6">
                         <a
@@ -380,13 +398,13 @@ export default function NamecardView({ namecard, vcardContent }) {
                             <img
                                 src={`/storage/${company.coy_banner}`}
                                 alt="Company Banner"
-                                className="w-full h-auto rounded-lg hover:opacity-80 transition-opacity"
+                                className="w-full h-auto rounded-lg hover:opacity-80"
                             />
                         </a>
                     </div>
                 )}
 
-                {/* Company Subsidiaries */}
+                {/* Subsidiaries */}
                 {company?.coy_subsidiaries && (
                     <div className="px-8 pb-6">
                         <a
@@ -396,8 +414,8 @@ export default function NamecardView({ namecard, vcardContent }) {
                         >
                             <img
                                 src={`/storage/${company.coy_subsidiaries}`}
-                                alt="Company Subsidiaries"
-                                className="w-full h-auto rounded-lg hover:opacity-80 transition-opacity"
+                                alt="Subsidiaries"
+                                className="w-full h-auto rounded-lg hover:opacity-80"
                             />
                         </a>
                     </div>
@@ -408,6 +426,27 @@ export default function NamecardView({ namecard, vcardContent }) {
                     Shared via Company Namecard System
                 </div>
             </div>
+            {/* QR Overlay */}
+            {showQR && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    onClick={() => setShowQR(false)} // Click outside closes
+                >
+                    <div
+                        className="bg-white p-6 rounded-lg"
+                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                    >
+                        <h2 className="text-lg font-bold mb-4">Scan QR Code</h2>
+                        <QRCodeSVG value={profileUrl} size={200} />
+                        <button
+                            onClick={() => setShowQR(false)}
+                            className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

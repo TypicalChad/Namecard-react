@@ -61,7 +61,7 @@ export default function EditNamecard({
 
     return (
         <AdminLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-white rounded-lg shadow p-6 max-w-md mx-auto mt-8">
+            <div className="bg-white rounded-lg shadow p-6 ">
                 <h2 className="text-xl font-semibold mb-4">Edit Namecard</h2>
 
                 <form

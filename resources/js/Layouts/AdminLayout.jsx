@@ -190,7 +190,7 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
                         className="flex items-center justify-center gap-3 py-3 px-4 border-b border-slate-700/50"
                         style={{ backgroundColor: "#145369" }}
                     >
-                        <div className="w-14 h-14 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <div className="w-16 h-14 flex items-center justify-center overflow-hidden flex-shrink-0 relative -right-1.5">
                             <img
                                 src="/images/logo-removebg-preview-white.png"
                                 alt="Company Logo"

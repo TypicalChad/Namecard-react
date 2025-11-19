@@ -37,7 +37,7 @@ export default function CreateUser({ roles, departments, breadcrumbs }) {
 
     return (
         <AdminLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-white rounded-lg shadow p-6 max-w-md mx-auto mt-8">
+            <div className="bg-white rounded-lg shadow p-6 ">
                 <h2 className="text-xl font-semibold mb-4">Create New User</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Name */}

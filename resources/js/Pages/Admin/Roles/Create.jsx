@@ -25,7 +25,7 @@ export default function CreateRole() {
 
     return (
         <AdminLayout>
-            <div className="bg-white rounded-lg shadow p-6 max-w-xl mx-auto mt-8">
+            <div className="bg-white rounded-lg shadow p-6 ">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
                     Create New Role
                 </h2>

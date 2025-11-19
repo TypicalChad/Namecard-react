@@ -19,7 +19,7 @@ export default function EditDepartment({ department, breadcrumbs, companies }) {
 
     return (
         <AdminLayout breadcrumbs={breadcrumbs}>
-            <div className="bg-white rounded-lg shadow p-6 max-w-md mx-auto mt-8">
+            <div className="bg-white rounded-lg shadow p-6 ">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
                     Edit Department
                 </h2>
