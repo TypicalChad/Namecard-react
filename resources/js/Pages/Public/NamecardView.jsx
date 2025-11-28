@@ -48,7 +48,7 @@ export default function NamecardView({ namecard, vcardContent }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 grid place-items-center p-4">
+        <div className="min-h-screen bg-gray-200 grid place-items-center p-4">
             <div className="bg-white shadow-lg rounded-lg max-w-2xl w-full overflow-hidden">
                 {/* Header */}
                 <div className="relative bg-gray-50 h-48">
@@ -134,7 +134,10 @@ export default function NamecardView({ namecard, vcardContent }) {
                     </div>
                 </div>
                 {/* Name + Position */}
-                <div className="text-center pt-18 px-8 grid gap-1">
+                <div
+                    className="grid place-items-center relative adjustable-item"
+                    style={{ marginTop: "28px" }}
+                >
                     <h1 className="text-2xl font-bold text-gray-800 tracking-wide">
                         {namecard.name}
                     </h1>
@@ -250,11 +253,11 @@ export default function NamecardView({ namecard, vcardContent }) {
                     <div className="px-8 py-6 grid gap-6">
                         {/* SERVICES */}
                         <div className="flex items-center py-4">
-                            <div className="flex-grow h-[1px] bg-red-600"></div>
+                            <div className="flex-grow h-[4px] bg-red-600 rounded"></div>
                             <h2 className="px-4 text-xl font-bold text-center whitespace-nowrap">
                                 SERVICES
                             </h2>
-                            <div className="flex-grow h-[1px] bg-red-600"></div>
+                            <div className="flex-grow h-[4px] bg-red-600 rounded"></div>
                         </div>
 
                         {/* Services Icons */}
@@ -324,11 +327,11 @@ export default function NamecardView({ namecard, vcardContent }) {
                             <>
                                 {/* PRODUCTS */}
                                 <div className="flex items-center py-4">
-                                    <div className="flex-grow h-[1px] bg-red-600"></div>
+                                    <div className="flex-grow h-[4px] bg-red-600 rounded"></div>
                                     <h2 className="px-4 text-xl font-bold text-center whitespace-nowrap">
                                         PRODUCTS
                                     </h2>
-                                    <div className="flex-grow h-[1px] bg-red-600"></div>
+                                    <div className="flex-grow h-[4px] bg-red-600 rounded"></div>
                                 </div>
 
                                 <div className="grid justify-items-center">
@@ -382,6 +385,7 @@ export default function NamecardView({ namecard, vcardContent }) {
                                 style={{ border: 0 }}
                                 allowFullScreen
                                 loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
                             ></iframe>
                         </div>
                     </div>
@@ -420,11 +424,6 @@ export default function NamecardView({ namecard, vcardContent }) {
                         </a>
                     </div>
                 )}
-
-                {/* Footer */}
-                <div className="bg-gray-50 px-8 py-6 text-center text-gray-500 text-xs">
-                    Shared via Company Namecard System
-                </div>
             </div>
             {/* QR Overlay */}
             {showQR && (
@@ -436,14 +435,7 @@ export default function NamecardView({ namecard, vcardContent }) {
                         className="bg-white p-6 rounded-lg"
                         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
                     >
-                        <h2 className="text-lg font-bold mb-4">Scan QR Code</h2>
                         <QRCodeSVG value={profileUrl} size={200} />
-                        <button
-                            onClick={() => setShowQR(false)}
-                            className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
-                        >
-                            Close
-                        </button>
                     </div>
                 </div>
             )}

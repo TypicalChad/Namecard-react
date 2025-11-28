@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('vcard', 255)->nullable();
             $table->string('certification', 255)->nullable();
             $table->string('uid', 255)->nullable();
+            $table->string('status', 255)->default('active');
             $table->integer('department_id')->nullable();
             $table->string('misc', 255)->nullable();
             $table->string('name_right', 255)->nullable();
