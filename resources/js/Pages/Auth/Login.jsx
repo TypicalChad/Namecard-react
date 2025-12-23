@@ -14,39 +14,28 @@ export default function Login({ status, canResetPassword }) {
         remember: false,
     });
 
-    const [genericError, setGenericError] = useState("");
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        setGenericError(""); // reset generic error
+
         post(route("login"), {
             onFinish: () => reset("password"),
-            onError: (err) => {
-                // If there's an email or password error, leave it to InputError
-                // Otherwise, show a generic message
-                if (!err.email && !err.password) {
-                    setGenericError("User not found or password mismatch");
-                }
-            },
         });
     };
 
     const handleKeyPress = (e) => {
-        if (e.key === "Enter") {
-            handleSubmit(e);
-        }
+        if (e.key === "Enter") handleSubmit(e);
     };
 
     return (
         <div className="min-h-screen flex">
-            {/* Left side - Background Image */}
+            {/* Left side - Background */}
             <div className="hidden lg:block lg:w-3/5 relative">
                 <img
                     src="/images/img.jpeg"
                     alt="Background"
                     className="w-full h-full object-cover brightness-125"
                 />
-                <div className="absolute inset-0 bg-black/40"></div>
+                <div className="absolute inset-0 bg-black/40" />
                 <div className="absolute bottom-12 left-12 text-white z-10">
                     <div className="flex items-center gap-3 mb-4">
                         <img
@@ -62,7 +51,7 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             </div>
 
-            {/* Right side - Login Form */}
+            {/* Right side - Form */}
             <div
                 className="w-full lg:w-2/5 flex items-center justify-center px-6 py-12"
                 style={{ backgroundColor: "#fffdf2" }}
@@ -71,7 +60,7 @@ export default function Login({ status, canResetPassword }) {
                     <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
                         <img
                             src="/images/logo-removebg-preview-white.png"
-                            alt="CBII Logo"
+                            alt="CBM Logo"
                             className="w-12 h-12 object-contain"
                         />
                         <h1 className="text-xl font-bold uppercase tracking-wider text-gray-800">
@@ -79,19 +68,15 @@ export default function Login({ status, canResetPassword }) {
                         </h1>
                     </div>
 
+                    {/* Status Messages */}
                     {status && (
                         <div className="mb-4 text-sm font-medium text-green-600 bg-green-50 p-3 rounded-lg">
                             {status}
                         </div>
                     )}
 
-                    {genericError && (
-                        <div className="mb-4 text-sm font-medium text-red-600 bg-red-50 p-3 rounded-lg">
-                            {genericError}
-                        </div>
-                    )}
-
                     <form onSubmit={handleSubmit}>
+                        {/* Email */}
                         <div>
                             <InputLabel htmlFor="email" value="E-mail" />
                             <TextInput
@@ -101,7 +86,7 @@ export default function Login({ status, canResetPassword }) {
                                 value={data.email}
                                 className="mt-1 block w-full px-4 py-3"
                                 autoComplete="username"
-                                isFocused={true}
+                                isFocused
                                 onChange={(e) =>
                                     setData("email", e.target.value)
                                 }
@@ -112,6 +97,7 @@ export default function Login({ status, canResetPassword }) {
                             />
                         </div>
 
+                        {/* Password */}
                         <div className="mt-4">
                             <InputLabel htmlFor="password" value="Password" />
                             <TextInput
@@ -132,6 +118,7 @@ export default function Login({ status, canResetPassword }) {
                             />
                         </div>
 
+                        {/* Remember / Forgot */}
                         <div className="flex items-center justify-between mt-4">
                             <label className="flex items-center">
                                 <Checkbox

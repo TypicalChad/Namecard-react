@@ -1,15 +1,16 @@
 import React, { useState, useRef, useEffect, useMemo, memo } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import { roleUrl, validRoutes } from "@/Utils/roleUrl";
 import { Head } from "@inertiajs/react";
 import {
+    UserCircleIcon,
     HomeIcon,
     UsersIcon,
     BuildingOfficeIcon,
     BuildingOffice2Icon,
-    PhotoIcon,
     IdentificationIcon,
     ShieldCheckIcon,
+    PowerIcon,
 } from "@heroicons/react/24/outline";
 
 // ICON mapping
@@ -20,7 +21,7 @@ const ICONS = {
     companies: <BuildingOfficeIcon />,
     departments: <BuildingOffice2Icon />,
     namecards: <IdentificationIcon />,
-    media: <PhotoIcon />,
+    logout: <PowerIcon />,
 };
 
 // Sidebar icon component
@@ -61,7 +62,6 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
             companies: "companies",
             departments: "departments",
             namecards: "namecards",
-            //media: "media",
         };
 
         return Object.keys(validRoutes).flatMap((role) =>
@@ -76,7 +76,6 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
                     "companies",
                     "roles",
                     "users",
-                    //"media",
                 ];
                 if (resourceRoutes.includes(baseRoute)) {
                     fullRoute = `${baseRoute}.index`;
@@ -113,16 +112,22 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
 
         const parts = currentPath.split("/").filter(Boolean);
 
-        const crumbs = [
-            {
-                name: "Dashboard",
-                href: roleUrl(effectiveUserRole, "dashboard"),
-            },
-        ];
-
         const pathParts = parts.filter(
             (p) => p.toLowerCase() !== effectiveUserRole
         );
+
+        const isDashboardPage =
+            pathParts.length === 0 || pathParts[0] === "dashboard";
+
+        const crumbs = [];
+
+        // ✅ Only add Dashboard if NOT already on dashboard
+        if (!isDashboardPage) {
+            crumbs.push({
+                name: "Dashboard",
+                href: roleUrl(effectiveUserRole, "dashboard"),
+            });
+        }
 
         let currentLink = `/${effectiveUserRole}`;
 
@@ -142,6 +147,13 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
             });
         }
 
+        if (crumbs.length === 0) {
+            crumbs.push({
+                name: "Dashboard",
+                href: null,
+            });
+        }
+
         return crumbs;
     }, [currentPath, propCrumbs, effectiveUserRole]);
 
@@ -158,6 +170,12 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
             normalizedCurrentPath.startsWith(`${normalizedLinkPath}/`)
         );
     };
+
+    useEffect(() => {
+        if (route().current("profile.edit")) {
+            setSidebarOpen(false);
+        }
+    }, [props]);
 
     // Close profile dropdown when clicking outside
     useEffect(() => {
@@ -187,7 +205,7 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
                 >
                     {/* Logo */}
                     <div
-                        className="flex items-center justify-center gap-3 py-3 px-4 border-b border-slate-700/50"
+                        className="flex items-center justify-center gap-3 py-1.5 px-4 border-b border-slate-700/50"
                         style={{ backgroundColor: "#145369" }}
                     >
                         <div className="w-16 h-14 flex items-center justify-center overflow-hidden flex-shrink-0 relative -right-1.5">
@@ -263,7 +281,7 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
                                             sidebarOpen
                                                 ? "gap-2 px-3"
                                                 : "gap-0 px-2 justify-center"
-                                        } py-3 transition-all duration-200 ${
+                                        } py-3 transition-all duration-500 ${
                                             active
                                                 ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
                                                 : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
@@ -382,42 +400,56 @@ export default function AdminLayout({ children, breadcrumbs: propCrumbs }) {
                             </div>
 
                             {/* Profile */}
-                            <div className="relative" ref={profileRef}>
+                            <div className="relative group" ref={profileRef}>
+                                {/* ✅ TOGGLE BUTTON */}
                                 <button
                                     onClick={() =>
                                         setProfileOpen((prev) => !prev)
                                     }
-                                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                                    className="flex items-center rounded-lg transition-all duration-300 bg-transparent"
                                 >
-                                    <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-sm">
-                                        <svg
-                                            className="w-5 h-5 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <span className="hidden md:block text-sm font-medium text-gray-700">
+                                    <UserCircleIcon className="w-6 h-6 text-gray-700" />
+
+                                    {/* ✅ Name slides only when CLICKED */}
+                                    <span
+                                        className={`overflow-hidden whitespace-nowrap text-sm font-medium transition-all duration-300 ease-out ${
+                                            profileOpen
+                                                ? "max-w-[200px] opacity-100 ml-2"
+                                                : "max-w-0 opacity-0 ml-0"
+                                        }`}
+                                    >
                                         {auth.user?.name}
                                     </span>
                                 </button>
 
-                                {profileOpen && (
-                                    <div className="absolute right-0 mt-2 w-30 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                                        <Link
-                                            href={route("logout")}
-                                            method="post"
-                                            className="block px-4 py-2 text-medium text-gray-700 hover:bg-gray-100 hover:text-red-500 rounded-lg"
-                                        >
-                                            Logout
-                                        </Link>
-                                    </div>
-                                )}
+                                {/* ✅ CLICK-BASED SLIDE-OUT DROPDOWN */}
+                                <div
+                                    className={`absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transform transition-all duration-300 origin-top ${
+                                        profileOpen
+                                            ? "scale-100 opacity-100 translate-y-0"
+                                            : "scale-95 opacity-0 -translate-y-1 pointer-events-none"
+                                    }`}
+                                >
+                                    {/* ✅ EDIT PROFILE BUTTON */}
+                                    <Link
+                                        href={route("profile.edit")}
+                                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg"
+                                    >
+                                        <UserCircleIcon className="w-5 h-5" />
+                                        Edit Profile
+                                    </Link>
+
+                                    {/* ✅ LOGOUT BUTTON */}
+                                    <Link
+                                        href={route("logout")}
+                                        method="post"
+                                        as="button"
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-b-lg"
+                                    >
+                                        <PowerIcon className="w-5 h-5" />
+                                        Logout
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </header>

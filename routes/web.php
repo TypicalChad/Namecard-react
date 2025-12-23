@@ -8,7 +8,8 @@ use App\Http\Controllers\{
     UserController,
     DepartmentController,
     CompController,
-    NameCardController
+    NameCardController,
+    ProfileController
 };
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -23,6 +24,17 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 // Logout
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+});
 
 
 // Force logout
@@ -89,6 +101,7 @@ foreach ($roles as $role) {
 
 // Public Profile
 Route::get('/profile/{uid}', [NameCardController::class, 'showByUid'])
+    ->whereUuid('uid')
     ->name('namecards.showByUid');
 
 require __DIR__ . '/auth.php';
